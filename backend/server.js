@@ -4,6 +4,7 @@ const cors = require("cors");
 const mysql = require("mysql");
 
 const app = express();
+app.use(express.json());
 app.use(cors())
 
 const db = mysql.createConnection({
@@ -23,6 +24,30 @@ app.get("/",(req,res)=>{
   })
 })
 
+// app.post('/register',(req,res)=>{
+//   const sql = "INSERT INTO visitors (`name`,`mobile-number`) VALUES (?)";
+//   const values = [
+//     req.body.name,
+//     req.body.mobileNumber
+//   ]
+//   db.query(sql,[values],(err, res)=>{
+//     if(err) return res.json("Error")
+//     return res.json(data);
+//   })
+
+// })
+app.post("/register", (req, res) => {
+  const sql = "INSERT INTO visitors (`name`, `mobile_number`) VALUES (?, ?)";
+  const values = [req.body.name, req.body.mobileNumber];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Insert failed" });
+    }
+    return res.json({ message: "Visitor registered successfully!", id: result.insertId });
+  });
+});
 
 
 
